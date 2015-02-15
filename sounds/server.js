@@ -54,8 +54,9 @@ mongoose.connection.on('open', function (err) {
     })
   )
 
-  router.get('/auth/spotify', passport.authenticate('spotify', { accessType: 'offline', approvalPrompt: 'force'}))
-  router.get('/auth/spotify/callback', passport.authenticate('spotify', {failureRedirect: '/fail',  successRedirect : '/suxess' }))
+  router.get('/auth/spotify', passport.authenticate('spotify', { session: false }))
+  router.get('/auth/spotify/callback', passport.authenticate('spotify', {session: false, failureRedirect: '/fail',  successRedirect : '/suxess' }))
+  
   router.get('/fail', function (req, res) { 
     res.send('FAILURE')  
   })
