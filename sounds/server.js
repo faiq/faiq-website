@@ -9,8 +9,6 @@ var express = require("express")
   , bodyParser = require('body-parser')
   , path = require('path')
   , router = express()
-  , SOUNDCLOUD_CLIENT_ID = keys.scID
-  , SOUNDCLOUD_CLIENT_SECRET = keys.scSec
   , SPOTIFY_CLIENT_ID = keys.sID
   , SPOTIFY_CLIENT_SECRET = keys.sSec 
   
@@ -30,33 +28,6 @@ mongoose.connection.on('open', function (err) {
 
   router.use(passport.initialize())
 
-  passport.use(new SoundCloudStrategy({
-      clientID: SOUNDCLOUD_CLIENT_ID,
-      clientSecret: SOUNDCLOUD_CLIENT_SECRET,
-      callbackURL: "http://127.0.0.1:3000/auth/soundcloud/callback"
-    },
-    function(accessToken, refreshToken, profile, done) {
-      console.log(arguments) 
-     /* process.nextTick(function () {
-        User.findOne({scToken: accessToken}, function (err, user) {
-          if (err) return done(err)
-          else if (user) return done(null, user)
-          else {
-            var newUser = new User()
-            newUser.scToken = accessToken
-            newUser.scRefreshToken = refreshToken
-            newUser.expirationDate = Math.floor((+ new Date)/1000 + params.expires_in)
-            newUser.save(function(err) {
-              if (err) throw err;
-              return done(null, newUser)
-            })
-          }
-        })
-      })*/
-    })
-  )
-  
-  
   passport.use(new SpotifyStrategy({
       clientID: SPOTIFY_CLIENT_ID,
       clientSecret: SPOTIFY_CLIENT_SECRET,
@@ -64,31 +35,35 @@ mongoose.connection.on('open', function (err) {
       scope:['playlist-read-private','user-library-read']
     },
     function(accessToken, refreshToken, profile, done) {
-      console.log(arguments) 
-      /*process.nextTick(function () {
-        User.findOne({id: profile.id}, function (err, user) {
+      process.nextTick(function () {
+        User.findOne({spotifyID: profile.id}, function (err, user) {
           if (err) return done(err)
           else if (user) return done(null, user)
           else {
             var newUser = new User()
-            
+            newUser.spotifyToken = accessToken
+            newUser.spotifyRefreshToken = refreshToken
+            newUser.spotifyExpirationDate = Math.floor((new Date().getTime())/1000 + 3600) //booooooooooooooooooooootleg
             newUser.save(function(err) {
               if (err) throw err
               return done(null, newUser)
             })
           }
         })
-      })*/
+      })
     })
   )
 
-  router.get('/auth/spotify', passport.authenticate('spotify'))
-  router.get('/auth/spotify/callback', passport.authenticate('spotify', {failureRedirect: '/fail',  successRedirect : '/files' }))
+  router.get('/auth/spotify', passport.authenticate('spotify', { accessType: 'offline', approvalPrompt: 'force'}))
+  router.get('/auth/spotify/callback', passport.authenticate('spotify', {failureRedirect: '/fail',  successRedirect : '/suxess' }))
   router.get('/fail', function (req, res) { 
     res.send('FAILURE')  
   })
   router.get('/', function (req, res) { 
     res.sendFile(path.resolve(__dirname, 'index.html'))
+  })
+  router.get('/suxess', function (req, res) { 
+    res.send('u can love me wen im dead')
   })
   http.createServer(router).listen('3000', '127.0.0.1')
 })

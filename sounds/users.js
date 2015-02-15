@@ -1,9 +1,7 @@
 
 module.exports = function (mongoose) { 
   var userSchema = mongoose.Schema({
-      scToken: String,
-      scRefreshToken: String,
-      scExpirationDate: Number,
+      spotifyID: String,
       spotifyToken: String, 
       spotifyRefreshToken: String, 
       spotifyExpirationDate: Number,
