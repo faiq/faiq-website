@@ -43,6 +43,7 @@ mongoose.connection.on('open', function (err) {
             var newUser = new User()
             newUser.spotifyToken = accessToken
             newUser.spotifyRefreshToken = refreshToken
+            newUser.spotifyID = profile.id
             newUser.spotifyExpirationDate = Math.floor((new Date().getTime())/1000 + 3600) //booooooooooooooooooooootleg
             newUser.save(function(err) {
               if (err) throw err
@@ -64,7 +65,7 @@ mongoose.connection.on('open', function (err) {
     res.sendFile(path.resolve(__dirname, 'index.html'))
   })
   router.get('/suxess', function (req, res) { 
-    res.send('u can love me wen im dead')
+    res.send('able to save keys from spotfiy')
   })
   http.createServer(router).listen('3000', '127.0.0.1')
 })
