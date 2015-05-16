@@ -59,7 +59,6 @@ router.get('/suxess', function (req, res) {
 })
 router.get('/albums', function (req, res) { 
   getAlbums(function (err, albums){     
-    console.log(err) 
     console.log(albums)
     res.send(albums)
   })

@@ -25,7 +25,7 @@ module.exports = function (user) {
           if (err || res.statusCode != 200) {
             reject(Error('something went wrong with refreshing tokens'))
           } else {
-            body = JSON.parse(body) 
+            console.log(body)
             user.spotifyToken = body['access_token']
             user.spotifyExpirationDate = Math.floor(new Date().getTime()/1000) + 3600
             return save(user)

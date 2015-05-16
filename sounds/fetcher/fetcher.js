@@ -18,14 +18,7 @@ module.exports = function (cb) {
           'Authorization': 'Bearer ' + user.spotifyToken
         }
       }
-      //def returns a promise not sure if this is what god wants me doing though
-      return new Promise(function(resolve, reject) {
-        request.getAsync(opts).get(1).then(function(body) {
-            resolve(body)
-          }).catch(function (reason) { 
-            reject(reason)
-          })
-      })
+      return request.getAsync(opts).get(1)
     })
     .then(function (results) { 
       results = JSON.parse(results)
@@ -39,7 +32,6 @@ module.exports = function (cb) {
       imgs.nodeify(cb)
     })
     .catch(function (reason) {
-     console.log(typeof reason)
      var dummy = new Promise(function (resolve, reject) { 
       reject(reason)
      })
