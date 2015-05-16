@@ -14,6 +14,9 @@
     "body-parser": "^1.12.0",
     "express": "^4.11.2",
     "mongoose": "^3.8.23",
-    "spotify-refresh": "^1.0.1"
+    "passport": "^0.2.1",
+    "passport-spotify": "^0.3.0",
+    "request": "^2.55.0",
+    "spotify-refresh": "^2.0.3"
   }
 }

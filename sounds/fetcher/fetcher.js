@@ -1,32 +1,48 @@
 var mongoose = require('mongoose') 
   , refresh = require('./refresh')
   , Promise = require('bluebird')
-  , User = null
+  , request = Promise.promisifyAll(require('request'))
+  , User = mongoose.model('User')
 
-mongoose.connection.on('error', function (err) {
-  process.exit(1) 
-  console.error(err)
-})
+module.exports = function (cb) { 
+    var promise = Promise.resolve(User.findOne({spotifyID: '1211231121'}).exec())
 
-mongoose.connect('mongodb://localhost/artists')
-
-mongoose.connection.on('open', function (err) {
-
-  User = require('../users')(mongoose)
-  var promise = User.findOne({spotifyID: '1211231121'}).exec()
-  
-  promise.then(refresh(User))
-  .then(function () { 
-    
-  })
-  .reject(function (reason) {
-    console.log(reason)
-  })
-    
-    /*function (err, user) { 
-    if (err) return //shouldn't really error
-    else { 
-      refresh(user)
-    }
-  })*/
-})
+    promise.then(function (user) {
+      return refresh(user) //check to see if this needs to be refreshed return a promise that resolves to the updated user
+    })
+    .then(function (user) { 
+      //this part should make the API calls to the spotify API
+      var opts = {
+        uri: 'https://api.spotify.com/v1/me/tracks',
+        headers: {
+          'Authorization': 'Bearer ' + user.spotifyToken
+        }
+      }
+      //def returns a promise not sure if this is what god wants me doing though
+      return new Promise(function(resolve, reject) {
+        request.getAsync(opts).get(1).then(function(body) {
+            resolve(body)
+          }).catch(function (reason) { 
+            reject(reason)
+          })
+      })
+    })
+    .then(function (results) { 
+      results = JSON.parse(results)
+      var imgs = Array.prototype.map.call(results.items, function (item) { 
+        var imgArr = item.track.album.images
+        return imgArr[imgArr.length - 2].url
+      })
+      imgs = new Promise(function(resolve, reject) {
+        resolve(imgs)
+      })
+      imgs.nodeify(cb)
+    })
+    .catch(function (reason) {
+     console.log(typeof reason)
+     var dummy = new Promise(function (resolve, reject) { 
+      reject(reason)
+     })
+    return dummy.nodeify(cb)
+    })
+}
