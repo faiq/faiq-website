@@ -5,9 +5,8 @@ var mongoose = require('mongoose')
   , User = mongoose.model('User')
 
 module.exports = function () { 
-    var promise = Promise.resolve(User.findOne({spotifyID: '1211231121'}).exec())
-    console.log(promise)
-    promise.then(function (user) {
+    return Promise.resolve(User.findOne({spotifyID: '1211231121'}).exec())
+    .then(function (user) {
       return refresh(user) //check to see if this needs to be refreshed return a promise that resolves to the updated user
     })
     .then(function (user) { 
@@ -26,19 +25,9 @@ module.exports = function () {
         var imgArr = item.track.album.images
         return imgArr[imgArr.length - 2].url
       })
-      console.log(typeof(imgs))
-      imgs = new Promise(function(resolve, reject) {
-        resolve(imgs)
-      })
-      console.log(typeof(imgs))
       return imgs
     })
     .catch(function (reason) {
-      var rejected = new Promise(function (resolve, reject) { 
-        reject(reason)
-      })
-      console.log(typeof(rejected))
-      return rejected
+      return reason
     })
-    return promise
 }
