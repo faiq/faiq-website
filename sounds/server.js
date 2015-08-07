@@ -58,9 +58,11 @@ router.get('/suxess', function (req, res) {
   res.send('able to save keys from spotfiy')
 })
 router.get('/albums', function (req, res) { 
-  getAlbums(function (err, albums){     
-    console.log(albums)
+  getAlbums().then(function (albums) { 
     res.send(albums)
+  })
+  .catch(function (reason) {
+    console.log(reason)
   })
 })
 
